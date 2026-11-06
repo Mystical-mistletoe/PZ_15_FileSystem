@@ -24,8 +24,8 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String FILE_NAME = "document.bin"; // с форматированием
-    private static final String TXT_NAME = "document.txt"; // читаемый текст (для скриншота)
+    private static final String FILE_NAME = "document.bin";
+    private static final String TXT_NAME = "document.txt";
 
     private int colorIndex = 0;
     private final int[] COLORS = {Color.BLACK, Color.BLUE, Color.RED, Color.GREEN};
@@ -34,10 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // автозагрузки НЕТ — только по кнопке «Открыть»
     }
-
-    // ===== ПУТИ (как в практике) =====
 
     private File getExternalPath() {
         return new File(getExternalFilesDir(null), FILE_NAME);
@@ -47,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         return new File(getExternalFilesDir(null), TXT_NAME);
     }
 
-    // ===== СОХРАНЕНИЕ =====
 
     public void saveText(View view) {
         EditText editor = findViewById(R.id.editor);
@@ -62,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 parcel.recycle();
             }
 
-            // Читаемая копия — чтобы можно было открыть и показать содержимое
             try (FileOutputStream txtFos = new FileOutputStream(getExternalTxtPath())) {
                 txtFos.write(editable.toString().getBytes());
             }
@@ -73,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // ===== ОТКРЫТИЕ (с восстановлением форматирования) =====
 
     public void openText(View view) {
         File file = getExternalPath();
@@ -91,16 +85,14 @@ public class MainActivity extends AppCompatActivity {
             try {
                 parcel.unmarshall(bytes, 0, bytes.length);
                 parcel.setDataPosition(0);
-                restored = (Spanned) TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel); // все спаны восстанавливаются
+                restored = (Spanned) TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(parcel);
             } finally {
                 parcel.recycle();
             }
 
-            // Показываем с форматированием в TextView
             TextView textView = findViewById(R.id.text);
             textView.setText(restored);
 
-            // И в редакторе — тоже с форматированием, чтобы можно было редактировать
             EditText editor = findViewById(R.id.editor);
             editor.setText(restored);
             editor.setSelection(restored.length());
@@ -108,8 +100,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-
-    // ===== ФОРМАТИРОВАНИЕ ВЫДЕЛЕННОГО =====
 
     private int[] sel() {
         EditText ed = findViewById(R.id.editor);
